@@ -1,11 +1,15 @@
 module PhotoGroove exposing (main)
 
+import Array exposing (Array)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
--- Testing the branch link
+type alias Msg = 
+    { description : String 
+    , data : String
+    }
 
 urlPrefix = 
     "http://elm-in-action.com/"
@@ -22,6 +26,7 @@ view model =
             []
         ]
 
+viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb = 
     img 
         [ src ( urlPrefix ++ thumb.url )
@@ -30,14 +35,27 @@ viewThumbnail selectedUrl thumb =
         ] 
         []
 
+type alias Model = 
+    { photos : List Photo 
+    , selectedUrl : String
+    }
+
+type alias Photo = 
+    { url : String }
+
+initalModel : Model
 initalModel = 
-    {photos = 
+    { photos = 
         [ { url = "1.jpeg" }
         , { url = "2.jpeg" }
         , { url = "3.jpeg" }
         ]
     , selectedUrl = "1.jpeg"
     }
+
+photoArray : Array Photo
+photoArray = 
+    Array.fromList initalModel.photos
 
 update msg model = 
     if msg.description == "ClickedPhoto" then
