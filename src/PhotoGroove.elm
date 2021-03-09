@@ -5,6 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
+-- Testing the branch link
+
 urlPrefix = 
     "http://elm-in-action.com/"
 
