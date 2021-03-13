@@ -2,9 +2,13 @@ module PhotoGroove exposing (main)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, classList, id, name, src, title, type_)
 import Html.Events exposing (onClick)
-import Random 
+import Http
+import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
+import Json.Decode.Pipeline exposing (optional, required)
+import Random
+
 
 urlPrefix :  String
 urlPrefix = 
@@ -16,6 +20,7 @@ type Msg
     | ClickedSize ThumbnailSize
     | ClickedSurpriseMe
     | GotRandomPhoto Photo
+    | GotPhotos ( Result Http.Error ( List Photo ) )
 
 
 view : Model -> Html Msg
@@ -55,6 +60,7 @@ viewThumbnail : String -> Photo -> Html Msg
 viewThumbnail selectedUrl thumb = 
     img 
         [ src ( urlPrefix ++ thumb.url )
+        , title ( thumb.title ++ " [" ++ String.fromInt thumb.size ++ " KB]")
         , classList [ ( "selected", selectedUrl == thumb.url ) ]
         , onClick ( ClickedPhoto thumb.url )
         ] 
@@ -87,7 +93,17 @@ type ThumbnailSize
 
 
 type alias Photo = 
-    { url : String }
+    { url : String 
+    , size : Int
+    , title : String
+    }
+
+photoDecoder : Decoder Photo
+photoDecoder = 
+    succeed Photo
+        |> required "url" string
+        |> required "size" int
+        |> optional "title" string "(untitled)"
     
 
 type Status
@@ -124,10 +140,9 @@ update msg model =
         ClickedSurpriseMe ->
             case model.status of
                 Loaded ( firstPhoto :: otherPhotos ) _ ->
-                    ( model
-                    , Random.generate GotRandomPhoto
-                        ( Random.uniform firstPhoto otherPhotos )
-                    )
+                    Random.uniform firstPhoto otherPhotos
+                    |> Random.generate GotRandomPhoto
+                    |> Tuple.pair model
 
                 Loaded [] _ ->
                     ( model, Cmd.none )
@@ -137,6 +152,17 @@ update msg model =
 
                 Errored errorMessage ->
                     ( model, Cmd.none )
+
+        GotPhotos ( Ok photos ) ->
+            case photos of
+                first :: rest ->
+                    ( { model | status = Loaded photos first.url }, Cmd.none )
+            
+                [] ->
+                    ( { model | status = Errored "0 photos found" }, Cmd.none )
+
+        GotPhotos ( Err httpError ) ->
+            ( { model | status = Errored "Server Error!" }, Cmd.none )
 
 
 selectUrl : String -> Status -> Status
@@ -152,11 +178,18 @@ selectUrl url status =
             status
 
 
+initialCmd : Cmd Msg
+initialCmd = 
+    Http.get
+    { url = "http://elm-in-action.com/photos/list.json"
+    , expect = Http.expectJson GotPhotos ( list photoDecoder )
+    }
+
 main :  Program () Model Msg
 main = 
     Browser.element
-        { init = \flags -> ( initalModel, Cmd.none )
+        { init = \_ -> ( initalModel, initialCmd )
         , view = view
         , update = update
-        , subscriptions = \model -> Sub.none
+        , subscriptions = \_ -> Sub.none
         }
