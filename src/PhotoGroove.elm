@@ -7,9 +7,19 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Random 
 
+urlPrefix :  String
 urlPrefix = 
     "http://elm-in-action.com/"
 
+
+type Msg
+    = ClickedPhoto String 
+    | GotSelectedIndex Int
+    | ClickedSize ThumbnailSize
+    | ClickedSurpriseMe
+
+
+view : Model -> Html Msg
 view model = 
     div [ class "content" ]
         [h1 [] [ text "Photo Groove" ]
@@ -56,25 +66,23 @@ sizeToString size =
         Large ->
             "large"
 
-type alias Model = 
-    { photos : List Photo 
-    , selectedUrl : String
-    , chosenSize : ThumbnailSize
-    }
 
 type ThumbnailSize
     = Small
     | Medium
     | Large
 
-type Msg
-    = ClickedPhoto String 
-    | GotSelectedIndex Int
-    | ClickedSize ThumbnailSize
-    | ClickedSurpriseMe
 
 type alias Photo = 
     { url : String }
+
+
+type alias Model = 
+    { photos : List Photo 
+    , selectedUrl : String
+    , chosenSize : ThumbnailSize
+    }
+
 
 initalModel : Model
 initalModel = 
@@ -87,9 +95,11 @@ initalModel =
     , chosenSize = Medium
     }
 
+
 photoArray : Array Photo
 photoArray = 
     Array.fromList initalModel.photos
+
 
 getPhotoUrl : Int -> String
 getPhotoUrl index = 
@@ -104,11 +114,12 @@ randomPhotoPicker : Random.Generator Int
 randomPhotoPicker = 
     Random.int 0 ( Array.length photoArray - 1 )
 
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
     case msg of
-        GotSelectedIndex ->
-            ( { model | selectedUrl = getPhotoUrl index }, Cmd none )
+        GotSelectedIndex index ->
+            ( { model | selectedUrl = getPhotoUrl index }, Cmd.none )
 
         ClickedPhoto url ->
             ( { model | selectedUrl = url }, Cmd.none )
@@ -119,9 +130,12 @@ update msg model =
         ClickedSurpriseMe ->
             ( model, Random.generate GotSelectedIndex randomPhotoPicker )
 
+
+main :  Program () Model Msg
 main = 
-    Browser.sandbox
-        { init = initalModel
+    Browser.element
+        { init = \flags -> ( initalModel, Cmd.none )
         , view = view
         , update = update
+        , subscriptions = \model -> Sub.none
         }
