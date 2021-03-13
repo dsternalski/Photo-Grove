@@ -9,6 +9,8 @@ import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (optional, required)
 import Random
 
+-- Testing the connection to the chapter-5 branch
+
 
 urlPrefix :  String
 urlPrefix = 
