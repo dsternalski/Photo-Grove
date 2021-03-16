@@ -11,6 +11,7 @@ import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 import Random
 
+-- Testing link to chapter 6
 
 urlPrefix :  String
 urlPrefix = 
