@@ -1,4 +1,4 @@
-port module PhotoGroove exposing (..)
+port module PhotoGroove exposing (main, photoDecoder)
 
 import Array exposing (Array)
 import Browser
