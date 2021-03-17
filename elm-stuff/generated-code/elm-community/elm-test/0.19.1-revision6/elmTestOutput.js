@@ -6425,6 +6425,7 @@ var $author$project$Test$Runner$Node$run = F2(
 				});
 		}
 	});
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm_explorations$test$Test$Runner$Failure$Equality = F2(
 	function (a, b) {
 		return {$: 'Equality', a: a, b: b};
@@ -6466,6 +6467,78 @@ var $elm_explorations$test$Expect$equateWith = F4(
 		return usesFloats ? $elm_explorations$test$Expect$fail(floatError) : A5($elm_explorations$test$Expect$testWith, $elm_explorations$test$Test$Runner$Failure$Equality, reason, comparison, b, a);
 	});
 var $elm_explorations$test$Expect$equal = A2($elm_explorations$test$Expect$equateWith, 'Expect.equal', $elm$core$Basics$eq);
+var $author$project$PhotoGroove$Photo = F3(
+	function (url, size, title) {
+		return {size: size, title: title, url: url};
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$succeed = _Json_succeed;
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return $elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						decoder,
+						$elm$json$Json$Decode$null(fallback)
+					]));
+		};
+		var handleResult = function (input) {
+			var _v0 = A2($elm$json$Json$Decode$decodeValue, pathDecoder, input);
+			if (_v0.$ === 'Ok') {
+				var rawValue = _v0.a;
+				var _v1 = A2(
+					$elm$json$Json$Decode$decodeValue,
+					nullOr(valDecoder),
+					rawValue);
+				if (_v1.$ === 'Ok') {
+					var finalResult = _v1.a;
+					return $elm$json$Json$Decode$succeed(finalResult);
+				} else {
+					var finalErr = _v1.a;
+					return $elm$json$Json$Decode$fail(
+						$elm$json$Json$Decode$errorToString(finalErr));
+				}
+			} else {
+				return $elm$json$Json$Decode$succeed(fallback);
+			}
+		};
+		return A2($elm$json$Json$Decode$andThen, handleResult, $elm$json$Json$Decode$value);
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A3(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder,
+				A2($elm$json$Json$Decode$field, key, $elm$json$Json$Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A2($elm$json$Json$Decode$field, key, valDecoder),
+			decoder);
+	});
+var $author$project$PhotoGroove$photoDecoder = A4(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+	'title',
+	$elm$json$Json$Decode$string,
+	'(untitled)',
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'size',
+		$elm$json$Json$Decode$int,
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'url',
+			$elm$json$Json$Decode$string,
+			$elm$json$Json$Decode$succeed($author$project$PhotoGroove$Photo))));
 var $elm_explorations$test$Test$Internal$blankDescriptionFailure = $elm_explorations$test$Test$Internal$failNow(
 	{
 		description: 'This test has a blank description. Let\'s give it a useful one!',
@@ -6487,9 +6560,13 @@ var $elm_explorations$test$Test$test = F2(
 	});
 var $author$project$PhotoGrooveTests$suite = A2(
 	$elm_explorations$test$Test$test,
-	'one plus one equals two',
+	'Title defaults to (untitled)',
 	function (_v0) {
-		return A2($elm_explorations$test$Expect$equal, 2, 1 + 1);
+		return A2(
+			$elm_explorations$test$Expect$equal,
+			$elm$core$Result$Ok(
+				{size: 5, title: '(untitled)', url: 'fruits.com'}),
+			A2($elm$json$Json$Decode$decodeString, $author$project$PhotoGroove$photoDecoder, '{"url": "fruits.com", "size":5}'));
 	});
 var $author$project$Test$Generated$Main$main = A2(
 	$author$project$Test$Runner$Node$run,
@@ -6500,7 +6577,7 @@ var $author$project$Test$Generated$Main$main = A2(
 		processes: 12,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: 100,
-		seed: 133859671954683
+		seed: 66267563923196
 	},
 	_List_fromArray(
 		[
@@ -6514,7 +6591,7 @@ var $author$project$Test$Generated$Main$main = A2(
 _Platform_export({'Test':{'Generated':{'Main':{'init':$author$project$Test$Generated$Main$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "\\\\.\\pipe\\elm_test-19252-1";
+var pipeFilename = "\\\\.\\pipe\\elm_test-16888-1";
 var net = require('net'),
   client = net.createConnection(pipeFilename);
 

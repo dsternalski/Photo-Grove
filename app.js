@@ -5406,7 +5406,7 @@ var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $author$project$PhotoGroove$Loading = {$: 'Loading'};
 var $author$project$PhotoGroove$Medium = {$: 'Medium'};
-var $author$project$PhotoGroove$initalModel = {activity: '', chosenSize: $author$project$PhotoGroove$Medium, hue: 5, noise: 5, ripple: 5, status: $author$project$PhotoGroove$Loading};
+var $author$project$PhotoGroove$initalModel = {activity: '', chosenSize: $author$project$PhotoGroove$Medium, hue: 0, noise: 0, ripple: 0, status: $author$project$PhotoGroove$Loading};
 var $author$project$PhotoGroove$GotPhotos = function (a) {
 	return {$: 'GotPhotos', a: a};
 };
@@ -6493,15 +6493,6 @@ var $elm$random$Random$generate = F2(
 			$elm$random$Random$Generate(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
@@ -6605,6 +6596,31 @@ var $elm$random$Random$uniform = F2(
 var $author$project$PhotoGroove$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'GotActivity':
+				var activity = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{activity: activity}),
+					$elm$core$Platform$Cmd$none);
+			case 'SlidHue':
+				var hue = msg.a;
+				return $author$project$PhotoGroove$applyFilters(
+					_Utils_update(
+						model,
+						{hue: hue}));
+			case 'SlidRipple':
+				var ripple = msg.a;
+				return $author$project$PhotoGroove$applyFilters(
+					_Utils_update(
+						model,
+						{ripple: ripple}));
+			case 'SlidNoise':
+				var noise = msg.a;
+				return $author$project$PhotoGroove$applyFilters(
+					_Utils_update(
+						model,
+						{noise: noise}));
 			case 'GotRandomPhoto':
 				var photo = msg.a;
 				return $author$project$PhotoGroove$applyFilters(
@@ -6613,13 +6629,6 @@ var $author$project$PhotoGroove$update = F2(
 						{
 							status: A2($author$project$PhotoGroove$selectUrl, photo.url, model.status)
 						}));
-			case 'GotActivity':
-				var activity = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{activity: activity}),
-					$elm$core$Platform$Cmd$none);
 			case 'ClickedPhoto':
 				var url = msg.a;
 				return $author$project$PhotoGroove$applyFilters(
@@ -6659,7 +6668,7 @@ var $author$project$PhotoGroove$update = F2(
 						var errorMessage = _v1.a;
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			case 'GotPhotos':
+			default:
 				if (msg.a.$ === 'Ok') {
 					var photos = msg.a.a;
 					if (photos.b) {
@@ -6669,15 +6678,7 @@ var $author$project$PhotoGroove$update = F2(
 							_Utils_update(
 								model,
 								{
-									status: function () {
-										var _v4 = $elm$core$List$head(photos);
-										if (_v4.$ === 'Just') {
-											var photo = _v4.a;
-											return A2($author$project$PhotoGroove$Loaded, photos, photo.url);
-										} else {
-											return A2($author$project$PhotoGroove$Loaded, _List_Nil, '');
-										}
-									}()
+									status: A2($author$project$PhotoGroove$Loaded, photos, first.url)
 								}));
 					} else {
 						return _Utils_Tuple2(
@@ -6698,24 +6699,6 @@ var $author$project$PhotoGroove$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'SlidHue':
-				var hue = msg.a;
-				return $author$project$PhotoGroove$applyFilters(
-					_Utils_update(
-						model,
-						{hue: hue}));
-			case 'SlidRipple':
-				var ripple = msg.a;
-				return $author$project$PhotoGroove$applyFilters(
-					_Utils_update(
-						model,
-						{ripple: ripple}));
-			default:
-				var noise = msg.a;
-				return $author$project$PhotoGroove$applyFilters(
-					_Utils_update(
-						model,
-						{noise: noise}));
 		}
 	});
 var $elm$html$Html$Attributes$stringProperty = F2(

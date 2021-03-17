@@ -3,7 +3,7 @@ port module PhotoGroove exposing (main, photoDecoder)
 import Array exposing (Array)
 import Browser
 import Html exposing (..)
-import Html.Attributes as Attr exposing (..)
+import Html.Attributes as Attr exposing (class, classList, id, name, src, title, type_)
 import Html.Events exposing (on, onClick)
 import Http
 import Json.Decode exposing (Decoder, at, bool, int, list, string, succeed)
