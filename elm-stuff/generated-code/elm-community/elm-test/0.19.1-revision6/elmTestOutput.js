@@ -6467,6 +6467,17 @@ var $elm_explorations$test$Expect$equateWith = F4(
 		return usesFloats ? $elm_explorations$test$Expect$fail(floatError) : A5($elm_explorations$test$Expect$testWith, $elm_explorations$test$Test$Runner$Failure$Equality, reason, comparison, b, a);
 	});
 var $elm_explorations$test$Expect$equal = A2($elm_explorations$test$Expect$equateWith, 'Expect.equal', $elm$core$Basics$eq);
+var $elm$core$Result$map = F2(
+	function (func, ra) {
+		if (ra.$ === 'Ok') {
+			var a = ra.a;
+			return $elm$core$Result$Ok(
+				func(a));
+		} else {
+			var e = ra.a;
+			return $elm$core$Result$Err(e);
+		}
+	});
 var $author$project$PhotoGroove$Photo = F3(
 	function (url, size, title) {
 		return {size: size, title: title, url: url};
@@ -6564,9 +6575,13 @@ var $author$project$PhotoGrooveTests$suite = A2(
 	function (_v0) {
 		return A2(
 			$elm_explorations$test$Expect$equal,
-			$elm$core$Result$Ok(
-				{size: 5, title: '(untitled)', url: 'fruits.com'}),
-			A2($elm$json$Json$Decode$decodeString, $author$project$PhotoGroove$photoDecoder, '{"url": "fruits.com", "size":5}'));
+			$elm$core$Result$Ok('(untitled)'),
+			A2(
+				$elm$core$Result$map,
+				function ($) {
+					return $.title;
+				},
+				A2($elm$json$Json$Decode$decodeString, $author$project$PhotoGroove$photoDecoder, '{"url": "fruits.com", "size":5}')));
 	});
 var $author$project$Test$Generated$Main$main = A2(
 	$author$project$Test$Runner$Node$run,
@@ -6577,7 +6592,7 @@ var $author$project$Test$Generated$Main$main = A2(
 		processes: 12,
 		report: $author$project$Test$Reporter$Reporter$ConsoleReport($author$project$Console$Text$UseColor),
 		runs: 100,
-		seed: 66267563923196
+		seed: 240935459723579
 	},
 	_List_fromArray(
 		[
@@ -6591,7 +6606,7 @@ var $author$project$Test$Generated$Main$main = A2(
 _Platform_export({'Test':{'Generated':{'Main':{'init':$author$project$Test$Generated$Main$main($elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
-var pipeFilename = "\\\\.\\pipe\\elm_test-16888-1";
+var pipeFilename = "\\\\.\\pipe\\elm_test-1732-1";
 var net = require('net'),
   client = net.createConnection(pipeFilename);
 

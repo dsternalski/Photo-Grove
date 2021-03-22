@@ -6,12 +6,13 @@ import PhotoGroove
 import Test exposing (..)
 
 
-suite : Test
-suite =
-    test "Title defaults to (untitled)"
-        ( \_ ->
+test : Test
+test =
+    test "Title defaults to (untitled)" <|
+        \_ ->
             """{"url": "fruits.com", "size":5}"""
                 |> decodeString PhotoGroove.photoDecoder
+                |> Result.map .title
                 |> Expect.equal
-                    ( Ok { url = "fruits.com", size = 5, title = "(untitled)" } )
-        )
+                    ( Ok "(untitled)" )
+        
