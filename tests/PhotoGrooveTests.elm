@@ -53,3 +53,15 @@ noPhotosNoThumbnails =
                 |> Query.fromHtml
                 |> Query.findAll [ tag "img" ]
                 |> Query.count ( Expect.equal 0 )
+
+
+thumbnailsRendered : String -> Query.Single msg -> Expectation
+thumbnailsRendered url query = 
+    query
+        |> Query.findAll [ tag "img", attribute, ( Attr.src ( urlPrefix ++ url ) ) ]
+        |> Query.count ( Expect.atLeast 1 )
+
+
+photoFromUrl : String -> Photo
+photoFromUrl url = 
+    { url = url, size = 0, title = "" }
