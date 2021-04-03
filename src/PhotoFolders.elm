@@ -10,9 +10,17 @@ import Json.Decode as Decode exposing (Decoder, int, list, string)
 import Json.Decode.Pipeline exposing (required)
 
 
+type Folder = 
+    Folder 
+        { name : String
+        , photoUrls : List String
+        , subfolders : List Folder
+        }
+
 type alias Model = 
     { selectedPhotoUrl : Maybe String
     , photos : Dict String Photo
+    , root : Folder
     }
 
 
@@ -20,6 +28,11 @@ initialModel : Model
 initialModel = 
     { selectedPhotoUrl = Nothing 
     , photos = Dict.empty
+    , root = Folder 
+        { name = "Loading..."
+        , photoUrls = []
+        , subfolders = []
+        }
     }
 
 
@@ -60,6 +73,45 @@ modelDecoder =
                     }
                 )
             ]
+        , root = 
+            Folder
+                { name = "Photos"
+                , photoUrls = []
+                , subfolders = 
+                    [ Folder
+                        { name = "2016"
+                        , photoUrls = [ "trevi", "coli" ] 
+                        , subfolders = 
+                            [ Folder 
+                                { name = "Outdoors"
+                                , photoUrls = []
+                                , subfolders = []
+                                }
+                            , Folder
+                                { name = "Indoors"
+                                , photoUrls = []
+                                , subfolders = []
+                                }
+                            ]
+                        }
+                    , Folder
+                        { name = "2017"
+                        , photoUrls = []
+                        , subfolders = 
+                            [ Folder
+                                { name = "Outdoors"
+                                , photoUrls = []
+                                , subfolders = []
+                                }
+                            , Folder
+                                { name = "Indoors"
+                                , photoUrls = []
+                                , subfolders = []
+                                }
+                            ]
+                        }
+                    ]
+                }
         }
 
 
@@ -141,6 +193,18 @@ viewRelatedPhoto url =
         ]
         []
 
+
+viewFolder : Folder -> Html Msg
+viewFolder ( Folder folder) = 
+    let
+        subfolders = 
+            List.map viewFolder folder.subfolders
+
+    in
+    div [ class "folder" ]
+        [ label [] [ text folder.name] 
+        , div [ class "subfolders" ] subfolders
+        ]
 
 urlPrefix : String
 urlPrefix =
