@@ -40,14 +40,14 @@ modelDecoder =
         , photos = Dict.fromList
             [   ( "trevi"
                     , { title = "Trevi"
-                    , relatedUrls =  ["coli", "fresco "]
+                    , relatedUrls =  ["coli", "fresco"]
                     , size = 34
                     , url = "trevi"
                     }
                 ),
                 ( "fresco"
                     , { title = "Fresco"
-                    , relatedUrls =  [ "trevi "]
+                    , relatedUrls =  [ "trevi"]
                     , size = 46
                     , url = "fresco"
                     }
@@ -144,4 +144,4 @@ viewRelatedPhoto url =
 
 urlPrefix : String
 urlPrefix =
-    "http:// elm-in-action.com/"
+    "http://elm-in-action.com/"

@@ -6131,7 +6131,7 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 					'trevi',
 					{
 						relatedUrls: _List_fromArray(
-							['coli', 'fresco ']),
+							['coli', 'fresco']),
 						size: 34,
 						title: 'Trevi',
 						url: 'trevi'
@@ -6140,7 +6140,7 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 					'fresco',
 					{
 						relatedUrls: _List_fromArray(
-							['trevi ']),
+							['trevi']),
 						size: 46,
 						title: 'Fresco',
 						url: 'fresco'
@@ -6155,7 +6155,7 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 						url: 'coli'
 					})
 				])),
-		selectedPhotoUrl: $elm$core$Maybe$Just('trevi')
+		selectedPhotoUrl: $elm$core$Maybe$Just('fresco')
 	});
 var $author$project$PhotoFolders$init = function (_v0) {
 	return _Utils_Tuple2(
@@ -6221,7 +6221,7 @@ var $elm$html$Html$Attributes$src = function (url) {
 		'src',
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
-var $author$project$PhotoFolders$urlPrefix = 'http:// elm-in-action.com/';
+var $author$project$PhotoFolders$urlPrefix = 'http://elm-in-action.com/';
 var $author$project$PhotoFolders$ClickedPhoto = function (a) {
 	return {$: 'ClickedPhoto', a: a};
 };
