@@ -1,6 +1,7 @@
 module PhotoFolders exposing (main)
 
 import Browser
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (class, src)
 import Html.Events exposing (onClick)
@@ -11,12 +12,15 @@ import Json.Decode.Pipeline exposing (required)
 
 type alias Model = 
     { selectedPhotoUrl : Maybe String
+    , photos : Dict String Photo
     }
 
 
 initialModel : Model
 initialModel = 
-    { selectedPhotoUrl = Nothing }
+    { selectedPhotoUrl = Nothing 
+    , photos = Dict.empty
+    }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -84,7 +88,7 @@ viewSelectedPhoto photo =
         , span [] [ text ( String.fromInt photo.size ++ "KB" ) ]
         , h3 [] [ text "Related" ]
         , div [ class "related-photos" ]
-            ( List.map viewSelectedPhoto photo./relatedUrls )
+            ( List.map viewRelatedPhoto photo.relatedUrls )
         ]
 
 
