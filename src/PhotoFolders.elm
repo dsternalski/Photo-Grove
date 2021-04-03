@@ -1,12 +1,16 @@
 module PhotoFolders exposing (main)
 
+import Browser
+import Html exposing (..)
+import Html.Attributes exposing (class, src)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode exposing (Decoder, int, list, string)
 import Json.Decode.Pipeline exposing (required)
 
 
 type alias Model = 
-    { selectedPhotoUrl : Maybe string
+    { selectedPhotoUrl : Maybe String
     }
 
 
@@ -15,7 +19,7 @@ initialModel =
     { selectedPhotoUrl = Nothing }
 
 
-init : () -> ( Model -> Cmd Msg )
+init : () -> ( Model, Cmd Msg )
 init _ = 
     ( initialModel
     , Http.get
@@ -38,7 +42,7 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
     case msg of
-        ClickedPhoto ->
+        ClickedPhoto url ->
             ( { model | selectedPhotoUrl = Just url }, Cmd.none )
 
         GotInitialModel ( Ok newModel ) ->
@@ -46,3 +50,54 @@ update msg model =
 
         GotInitialModel ( Err _ ) ->
             ( model, Cmd.none )
+
+
+view : Model -> Html Msg
+view model = 
+    h1 [] [ text "The Grooveiest folders the world has ever seen" ]
+
+
+main : Program () Model Msg
+main = 
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = \_ -> Sub.none            
+        }
+
+
+type alias Photo = 
+    { title : String
+    , size: Int
+    , relatedUrls : List String
+    , url : String
+    }
+
+
+viewSelectedPhoto : Photo -> Html Msg
+viewSelectedPhoto photo =
+    div
+        [ class "selected-photo" ]
+        [ h2 [] [ text photo.title ]
+        , img [ src ( urlPrefix ++ "photos/" ++ photo.url ++ "/full") ] []
+        , span [] [ text ( String.fromInt photo.size ++ "KB" ) ]
+        , h3 [] [ text "Related" ]
+        , div [ class "related-photos" ]
+            ( List.map viewSelectedPhoto photo./relatedUrls )
+        ]
+
+
+viewRelatedPhoto : String -> Html Msg
+viewRelatedPhoto url =
+    img
+        [ class "related-photo" 
+        , onClick ( ClickedPhoto url ) 
+        , src ( urlPrefix ++ "photos/" ++ url ++ "/thumb" )
+        ]
+        []
+
+
+urlPrefix : String
+urlPrefix =
+    "http:// elm-in-action.com/"
