@@ -55,7 +55,7 @@ modelDecoder =
                 ( "coli"
                     , { title = "Coliseum"
                     , relatedUrls = [ "trevi", "fresco" ]
-                    , size 36
+                    , size = 36
                     , url = "coli"
                     }
                 )
