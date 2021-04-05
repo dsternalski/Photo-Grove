@@ -150,7 +150,11 @@ view model =
                     text ""
     in
     div [ class "content" ]
-        [ div [ class "selected-photo"] [ selectedPhoto ] ]
+        [ div [ class "folders" ]
+            [ h1 [] [ text "Folders" ] 
+            , viewFolder model.root ]
+        , div [ class "selected-photo"] [ selectedPhoto ] 
+        ]
 
 
 main : Program () Model Msg
