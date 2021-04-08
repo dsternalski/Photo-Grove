@@ -6115,7 +6115,7 @@ var $author$project$PhotoFolders$Folder = function (a) {
 var $author$project$PhotoFolders$initialModel = {
 	photos: $elm$core$Dict$empty,
 	root: $author$project$PhotoFolders$Folder(
-		{name: 'Loading...', photoUrls: _List_Nil, subfolders: _List_Nil}),
+		{expanded: true, name: 'Loading...', photoUrls: _List_Nil, subfolders: _List_Nil}),
 	selectedPhotoUrl: $elm$core$Maybe$Nothing
 };
 var $elm$core$Dict$fromList = function (assocs) {
@@ -6165,33 +6165,36 @@ var $author$project$PhotoFolders$modelDecoder = $elm$json$Json$Decode$succeed(
 				])),
 		root: $author$project$PhotoFolders$Folder(
 			{
+				expanded: true,
 				name: 'Photos',
 				photoUrls: _List_Nil,
 				subfolders: _List_fromArray(
 					[
 						$author$project$PhotoFolders$Folder(
 						{
+							expanded: true,
 							name: '2016',
 							photoUrls: _List_fromArray(
 								['trevi', 'coli']),
 							subfolders: _List_fromArray(
 								[
 									$author$project$PhotoFolders$Folder(
-									{name: 'Outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
+									{expanded: true, name: 'Outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
 									$author$project$PhotoFolders$Folder(
-									{name: 'Indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
+									{expanded: true, name: 'Indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
 								])
 						}),
 						$author$project$PhotoFolders$Folder(
 						{
+							expanded: true,
 							name: '2017',
 							photoUrls: _List_Nil,
 							subfolders: _List_fromArray(
 								[
 									$author$project$PhotoFolders$Folder(
-									{name: 'Outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
+									{expanded: true, name: 'Outdoors', photoUrls: _List_Nil, subfolders: _List_Nil}),
 									$author$project$PhotoFolders$Folder(
-									{name: 'Indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
+									{expanded: true, name: 'Indoors', photoUrls: _List_Nil, subfolders: _List_Nil})
 								])
 						})
 					])
