@@ -12,10 +12,10 @@ import Json.Decode.Pipeline exposing (required)
 
 type Folder = 
     Folder 
-        { expanded : Bool
-        , name : String
+        { name : String
         , photoUrls : List String
         , subfolders : List Folder
+        , expanded : Bool
         }
 
 type alias Model = 
@@ -29,12 +29,13 @@ initialModel : Model
 initialModel = 
     { selectedPhotoUrl = Nothing 
     , photos = Dict.empty
-    , root = Folder 
-        { expanded = True
-        , name = "Loading..."
-        , photoUrls = []
-        , subfolders = []
-        }
+    , root = 
+        Folder 
+            { name = "Loading..."
+            , expanded = True
+            , photoUrls = []
+            , subfolders = []
+            }
     }
 
 
@@ -50,78 +51,12 @@ init _ =
 
 modelDecoder : Decoder Model
 modelDecoder = 
-    Decode.succeed 
-        { selectedPhotoUrl = Just "trevi"
-        , photos = Dict.fromList
-            [   ( "trevi"
-                    , { title = "Trevi"
-                    , relatedUrls =  ["coli", "fresco"]
-                    , size = 34
-                    , url = "trevi"
-                    }
-                ),
-                ( "fresco"
-                    , { title = "Fresco"
-                    , relatedUrls =  [ "trevi"]
-                    , size = 46
-                    , url = "fresco"
-                    }
-                ),
-                ( "coli"
-                    , { title = "Coliseum"
-                    , relatedUrls = [ "trevi", "fresco" ]
-                    , size = 36
-                    , url = "coli"
-                    }
-                )
-            ]
-        , root = 
-            Folder 
-                { expanded = True
-                , name = "Photos"
-                , photoUrls = []
-                , subfolders = 
-                    [ Folder
-                        { expanded = True
-                        , name = "2016"
-                        , photoUrls = [ "trevi", "coli" ] 
-                        , subfolders = 
-                            [ Folder 
-                                { expanded = True
-                                , name = "Outdoors"
-                                , photoUrls = []
-                                , subfolders = []
-                                }
-                            , Folder
-                                { expanded = True
-                                , name = "Indoors"
-                                , photoUrls = []
-                                , subfolders = []
-                                }
-                            ]
-                        }
-                    , Folder
-                        { expanded = True
-                        , name = "2017"
-                        , photoUrls = []
-                        , subfolders = 
-                            [ Folder
-                                { expanded = True
-                                , name = "Outdoors"
-                                , photoUrls = []
-                                , subfolders = []
-                                }
-                            , Folder
-                                { expanded = True
-                                , name = "Indoors"
-                                , photoUrls = []
-                                , subfolders = []
-                                }
-                            ]
-                        }
-                    ]
-                }
-        }
+    Decode.map2
+        ( \photos root ->
+            { photos = photos, root = root, selectedPhotoUrl = Nothing }
+         )
+         modelPhotosDecoder
+         folderDecoder
 
 
 type Msg
@@ -182,7 +117,7 @@ main =
 
 type alias Photo = 
     { title : String
-    , size: Int
+    , size : Int
     , relatedUrls : List String
     , url : String
     }
@@ -227,13 +162,17 @@ viewFolder path ( Folder folder) =
         folderLabel = 
             label [ onClick ( ClickedFolder path ) ] [ text folder.name ]
 
-        contents = 
-            List.append
-                ( List.indexedMap viewSubfolder folder.subfolders )
-                ( List.map viewPhoto folder.photoUrls )
+
 
     in
     if folder.expanded then
+        let
+            contents = 
+                List.append
+                    ( List.indexedMap viewSubfolder folder.subfolders )
+                    ( List.map viewPhoto folder.photoUrls )
+
+        in
         div [ class "folder expanded" ]
             [ folderLabel 
             , div [ class "contents" ] contents
@@ -249,6 +188,9 @@ appendIndex index path =
         End ->
             Subfolder index End
 
+        Subfolder subfolderIndex remainingPath ->
+            Subfolder subfolderIndex ( appendIndex index remainingPath )
+
 
 urlPrefix : String
 urlPrefix =
@@ -261,16 +203,16 @@ type FolderPath
 
 
 toggleExpanded : FolderPath -> Folder -> Folder
-toggleExpanded path ( Folder folder ) =
+toggleExpanded path ( Folder root ) =
     case path of
         End -> 
-            Folder { folder | expanded = not folder.expanded }
+            Folder { root | expanded = not root.expanded }
 
-        subfolder ->
+        Subfolder targetIndex remainingPath ->
             let
                 subfolders : List Folder
                 subfolders =
-                    List.indexedMap transform folder.subfolders
+                    List.indexedMap transform root.subfolders
 
                 
                 transform : Int -> Folder -> Folder
@@ -281,7 +223,7 @@ toggleExpanded path ( Folder folder ) =
                     else
                         currentSubfolder
             in
-            Folder { folder | subfolders = subfolders }
+            Folder { root | subfolders = subfolders }
 
 
 type alias JsonPhoto = 
@@ -301,12 +243,12 @@ jsonPhotoDecoder =
 
 finishPhoto : ( String, JsonPhoto ) -> ( String, Photo )
 finishPhoto ( url, json ) = 
-    ( 
-        ( url = url
+    ( url
+        , { url = url
         , size = json.size
         , title = json.title
         , relatedUrls = json.relatedUrls
-        )
+        }
     )
 
 
@@ -315,3 +257,39 @@ fromPairs pairs =
     pairs
         |> List.map finishPhoto
         |> Dict.fromList
+
+
+photosDecoder : Decoder ( Dict String Photo )
+photosDecoder = 
+    Decode.keyValuePairs jsonPhotoDecoder
+        |> Decode.map fromPairs
+
+
+folderDecoder : Decoder Folder
+folderDecoder = 
+    Decode.succeed folderFromJson
+        |> required "name" string
+        |> required "photos" photosDecoder
+        |> required "subfolders" ( Decode.lazy ( \_ -> list folderDecoder ) )
+
+
+folderFromJson : String -> Dict String Photo -> List Folder -> Folder
+folderFromJson name photos subfolders = 
+    Folder
+        { name = name
+        , expanded = True
+        , subfolders = subfolders
+        , photoUrls = Dict.keys photos
+        }
+
+
+modelPhotosDecoder : Decoder ( Dict String Photo )
+modelPhotosDecoder = 
+    Decode.succeed modelPhotosFromJson
+        |> required "photos" photosDecoder
+        |> required "subfolders" ( Decode.lazy ( \_ -> list modelPhotosDecoder ) )
+
+
+modelPhotosFromJson : Dict String Photo -> List ( Dict String Photo ) -> Dict String Photo
+modelPhotosFromJson folderPhotos subfolderPhotos = 
+    List.foldl Dict.union folderPhotos subfolderPhotos
