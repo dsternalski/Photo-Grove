@@ -44,7 +44,7 @@ viewHeader page =
         links = 
             ul [] 
                 [ navLink Folders { url = "/", caption = "Folders" }
-                , navLink Gallery { url = "/galler", caption = "Gallery" }
+                , navLink Gallery { url = "/gallery", caption = "Gallery" }
                 ]
 
         navLink : Page -> { url : String, caption : String } -> Html msg
@@ -75,7 +75,7 @@ subscriptions model =
 
 main : Program () Model Msg
 main = 
-    Browser.document
+    Browser.application
         { init = \_ -> ( { page = Gallery }, Cmd.none )
         , subscriptions = subscriptions
         , update = update
