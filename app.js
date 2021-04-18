@@ -10555,6 +10555,7 @@ var $author$project$Main$viewFooter = A2(
 			$elm$html$Html$text('One is never alone with a rubber duck. - Douglas Adams')
 		]));
 var $author$project$Main$Folders = {$: 'Folders'};
+var $author$project$Main$NothingYet = {$: 'NothingYet'};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -10579,6 +10580,12 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$core$Debug$log = _Debug_log;
 var $elm$html$Html$nav = _VirtualDom_node('nav');
+var $elm$html$Html$Events$onMouseOver = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'mouseover',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $author$project$Main$viewHeader = function (page) {
 	var navLink = F2(
 		function (targetPage, _v0) {
@@ -10635,7 +10642,10 @@ var $author$project$Main$viewHeader = function (page) {
 			]));
 	return A2(
 		$elm$html$Html$nav,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Events$onMouseOver($author$project$Main$NothingYet)
+			]),
 		_List_fromArray(
 			[logo, links]));
 };

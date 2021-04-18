@@ -49,7 +49,7 @@ viewHeader page =
 
         navLink : Page -> { url : String, caption : String } -> Html msg
         navLink targetPage { url, caption } = 
-            li [ classList [ ( "active", page == Debug.log "Rendering nav link with" targetPage ) ] ]
+            li [ classList [ ( "active", page == targetPage ) ] ]
                 [a [ href url ] [ text caption ] ]
 
     in
