@@ -22,3 +22,18 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = 
     ( model, Cmd.none )
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model = 
+    Sub.none
+
+
+main : Program () Model Msg
+main = 
+    Browser.Document
+        { init = \_ -> ( {}, Cmd.none )
+        , subscriptions = subscriptions
+        , update = update
+        , view = view
+        }
