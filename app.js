@@ -10577,6 +10577,7 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$core$Debug$log = _Debug_log;
 var $elm$html$Html$nav = _VirtualDom_node('nav');
 var $author$project$Main$viewHeader = function (page) {
 	var navLink = F2(
@@ -10592,7 +10593,9 @@ var $author$project$Main$viewHeader = function (page) {
 							[
 								_Utils_Tuple2(
 								'active',
-								_Utils_eq(page, targetPage))
+								_Utils_eq(
+									page,
+									A2($elm$core$Debug$log, 'Rendering nav link with', targetPage)))
 							]))
 					]),
 				_List_fromArray(
