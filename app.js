@@ -5018,7 +5018,7 @@ var $elm$core$Set$toList = function (_v0) {
 	return $elm$core$Dict$keys(dict);
 };
 var $elm$core$Basics$GT = {$: 'GT'};
-var $author$project$Main$Gallery = {$: 'Gallery'};
+var $author$project$Main$Folders = {$: 'Folders'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -10536,12 +10536,13 @@ var $elm$core$Basics$never = function (_v0) {
 		continue never;
 	}
 };
-var $elm$browser$Browser$document = _Browser_document;
+var $elm$browser$Browser$application = _Browser_application;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
+var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -10554,7 +10555,7 @@ var $author$project$Main$viewFooter = A2(
 		[
 			$elm$html$Html$text('One is never alone with a rubber duck. - Douglas Adams')
 		]));
-var $author$project$Main$Folders = {$: 'Folders'};
+var $author$project$Main$Gallery = {$: 'Gallery'};
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -10648,12 +10649,29 @@ var $author$project$Main$view = function (model) {
 		title: 'Photo Groove, SPA Style'
 	};
 };
-var $author$project$Main$main = $elm$browser$Browser$document(
+var $author$project$Main$main = $elm$browser$Browser$application(
 	{
-		init: function (_v0) {
-			return _Utils_Tuple2(
-				{page: $author$project$Main$Gallery},
-				$elm$core$Platform$Cmd$none);
+		init: F3(
+			function (_v0, _v1, _v2) {
+				return _Utils_Tuple2(
+					{page: $author$project$Main$Folders},
+					$elm$core$Platform$Cmd$none);
+			}),
+		onUrlChange: function (_v3) {
+			return _Debug_todo(
+				'Main',
+				{
+					start: {line: 81, column: 31},
+					end: {line: 81, column: 41}
+				})('handle URL changes');
+		},
+		onUrlRequest: function (_v4) {
+			return _Debug_todo(
+				'Main',
+				{
+					start: {line: 80, column: 32},
+					end: {line: 80, column: 42}
+				})('handle URL requests');
 		},
 		subscriptions: $author$project$Main$subscriptions,
 		update: $author$project$Main$update,
