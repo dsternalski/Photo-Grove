@@ -28,13 +28,6 @@ type Route
     = Gallery
     | Folders
     | SelectedPhoto String
-    | GotFoldersMsg Folders.Msg
-    | GotGalleryMsg Gallery.Msg
-
-
-type Msg
-    = ClickedLink Browser.UrlRequest
-    | ChangedUrl Url
 
 
 view : Model -> Document Msg
@@ -82,6 +75,15 @@ viewHeader page =
     nav [] [ logo, links ]
 
 
+parser : Parser (Route -> a) a
+parser =
+    Parser.oneOf
+        [ Parser.map Folders Parser.top
+        , Parser.map Gallery (s "gallery")
+        , Parser.map SelectedPhoto (s "photos" </> Parser.string)
+        ]
+
+
 isActive : { link : Route, page : Page } -> Bool
 isActive { link, page } =
     case ( link, page ) of
@@ -106,6 +108,13 @@ viewFooter =
     footer []
         [ text "One is never alone with a rubber duck. - Douglas Adams"
         ]
+
+
+type Msg
+    = ClickedLink Browser.UrlRequest
+    | ChangedUrl Url
+    | GotFoldersMsg Folders.Msg
+    | GotGalleryMsg Gallery.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -153,6 +162,23 @@ toGallery model ( gallery, cmd ) =
     )
 
 
+main : Program Float Model Msg
+main =
+    Browser.application
+        { init = init
+        , onUrlRequest = ClickedLink
+        , onUrlChange = ChangedUrl
+        , subscriptions = subscriptions
+        , update = update
+        , view = view
+        }
+
+
+init : Float -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init version url key =
+    updateUrl url { page = NotFound, key = key, version = version }
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.page of
@@ -162,11 +188,6 @@ subscriptions model =
 
         _ ->
             Sub.none
-
-
-init : Float -> Url -> Nav.Key -> ( Model, Cmd Msg )
-init version url key =
-    updateUrl url { page = NotFound, key = key, version = version }
 
 
 updateUrl : Url -> Model -> ( Model, Cmd Msg )
@@ -186,24 +207,3 @@ updateUrl url model =
 
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
-
-
-parser : Parser (Route -> a) a
-parser =
-    Parser.oneOf
-        [ Parser.map Folders Parser.top
-        , Parser.map Gallery (s "gallery")
-        , Parser.map SelectedPhoto (s "photos" </> Parser.string)
-        ]
-
-
-main : Program Float Model Msg
-main =
-    Browser.application
-        { init = init
-        , onUrlRequest = ClickedLink
-        , onUrlChange = ChangedUrl
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        }
