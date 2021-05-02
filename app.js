@@ -10872,6 +10872,40 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Main$isActive = function (_v0) {
+	var link = _v0.link;
+	var page = _v0.page;
+	var _v1 = _Utils_Tuple2(link, page);
+	switch (_v1.a.$) {
+		case 'Gallery':
+			if (_v1.b.$ === 'Gallery') {
+				var _v2 = _v1.a;
+				var _v3 = _v1.b;
+				return true;
+			} else {
+				var _v4 = _v1.a;
+				return false;
+			}
+		case 'Folders':
+			switch (_v1.b.$) {
+				case 'Folders':
+					var _v5 = _v1.a;
+					var _v6 = _v1.b;
+					return true;
+				case 'SelectedPhoto':
+					var _v7 = _v1.a;
+					return true;
+				default:
+					var _v8 = _v1.a;
+					return false;
+			}
+		case 'SelectedPhoto':
+			return false;
+		default:
+			var _v9 = _v1.a;
+			return false;
+	}
+};
 var $elm$html$Html$nav = _VirtualDom_node('nav');
 var $author$project$Main$viewHeader = function (page) {
 	var navLink = F2(
@@ -10887,7 +10921,8 @@ var $author$project$Main$viewHeader = function (page) {
 							[
 								_Utils_Tuple2(
 								'active',
-								_Utils_eq(page, targetPage))
+								$author$project$Main$isActive(
+									{link: targetPage, page: page}))
 							]))
 					]),
 				_List_fromArray(
@@ -10950,16 +10985,16 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 104, column: 31},
-					end: {line: 104, column: 41}
+					start: {line: 129, column: 31},
+					end: {line: 129, column: 41}
 				})('handle URL changes');
 		},
 		onUrlRequest: function (_v1) {
 			return _Debug_todo(
 				'Main',
 				{
-					start: {line: 103, column: 32},
-					end: {line: 103, column: 42}
+					start: {line: 128, column: 32},
+					end: {line: 128, column: 42}
 				})('handle URL requests');
 		},
 		subscriptions: $author$project$Main$subscriptions,
