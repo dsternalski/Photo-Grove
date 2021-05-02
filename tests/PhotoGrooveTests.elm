@@ -1,11 +1,11 @@
-module PhotoGrooveTests exposing (clickThumbnail, decoderTest, photoFromUrl, sliders, testSlider, thumbnailsRendered, thumbnailsWork, urlFuzzer, urlsFromCount)
+module PhotoGalleryTests exposing (clickThumbnail, decoderTest, photoFromUrl, sliders, testSlider, thumbnailsRendered, thumbnailsWork, urlFuzzer, urlsFromCount)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import Html.Attributes as Attr exposing (src)
 import Json.Decode as Decode exposing (decodeValue)
 import Json.Encode as Encode
-import PhotoGroove exposing (Model, Msg(..), Photo, Status(..), initalModel, update, urlPrefix, view)
+import PhotoGallery exposing (Model, Msg(..), Photo, Status(..), initalModel, update, urlPrefix, view)
 import Test exposing (..)
 import Test.Html.Event as Event
 import Test.Html.Query as Query
@@ -20,7 +20,7 @@ decoderTest =
             , ( "size", Encode.int size ) 
             ]
                 |> Encode.object
-                |> decodeValue PhotoGroove.photoDecoder
+                |> decodeValue PhotoGallery.photoDecoder
                 |> Result.map .title
                 |> Expect.equal ( Ok "(untitled)" )
 
