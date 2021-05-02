@@ -19,8 +19,8 @@ type alias Model =
 
 
 type Page
-    = Gallery Gallery.Model
-    | Folders Folders.Model
+    = GalleryPage Gallery.Model
+    | FoldersPage Folders.Model
     | NotFound
 
 
@@ -28,6 +28,8 @@ type Route
     = Gallery
     | Folders
     | SelectedPhoto String
+    | GotFoldersMsg Folders.Msg
+    | GotGalleryMsg Gallery.Msg
 
 
 type Msg
@@ -39,7 +41,17 @@ view : Model -> Document Msg
 view model =
     let
         content =
-            text "This isn't even my final form!"
+            case model.page of
+                FoldersPage folders ->
+                    Folders.view folders
+                        |> Html.map GotFoldersMsg
+
+                GalleryPage gallery ->
+                    Gallery.view gallery
+                        |> Html.map GotGalleryMsg
+
+                NotFound ->
+                    text "Not Found"
     in
     { title = "Photo Groove, SPA Style"
     , body =
@@ -64,7 +76,7 @@ viewHeader page =
 
         navLink : Route -> { url : String, caption : String } -> Html msg
         navLink route { url, caption } =
-            li [ classList [ ( "active", isActive { link = routeS, page = page } ) ] ]
+            li [ classList [ ( "active", isActive { link = route, page = page } ) ] ]
                 [ a [ href url ] [ text caption ] ]
     in
     nav [] [ logo, links ]
@@ -73,13 +85,13 @@ viewHeader page =
 isActive : { link : Route, page : Page } -> Bool
 isActive { link, page } =
     case ( link, page ) of
-        ( Gallery, GalleryPage ) ->
+        ( Gallery, GalleryPage _ ) ->
             True
 
         ( Gallery, _ ) ->
             False
 
-        ( Folders, FoldersPage ) ->
+        ( Folders, FoldersPage _ ) ->
             True
 
         ( Folders, _ ) ->
@@ -108,33 +120,72 @@ update msg model =
                     ( model, Nav.pushUrl model.key (Url.toString url) )
 
         ChangedUrl url ->
-            ( { model | page = urlToPage model.version url }, Cmd.none )
+            updateUrl url model
+
+        GotFoldersMsg foldersMsg ->
+            case model.page of
+                FoldersPage folders ->
+                    toFolders model (Folders.update foldersMsg folders)
+
+                _ ->
+                    ( model, Cmd.none )
+
+        GotGalleryMsg galleryMsg ->
+            case model.page of
+                GalleryPage gallery ->
+                    toGallery model (Gallery.update galleryMsg gallery)
+
+                _ ->
+                    ( model, Cmd.none )
+
+
+toFolders : Model -> ( Folders.Model, Cmd Folders.Msg ) -> ( Model, Cmd Msg )
+toFolders model ( folders, cmd ) =
+    ( { model | page = FoldersPage folders }
+    , Cmd.map GotFoldersMsg cmd
+    )
+
+
+toGallery : Model -> ( Gallery.Model, Cmd Gallery.Msg ) -> ( Model, Cmd Msg )
+toGallery model ( gallery, cmd ) =
+    ( { model | page = GalleryPage gallery }
+    , Cmd.map GotGalleryMsg cmd
+    )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    case model.page of
+        GalleryPage gallery ->
+            Gallery.subscriptions gallery
+                |> Sub.map GotGalleryMsg
+
+        _ ->
+            Sub.none
 
 
 init : Float -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init version url key =
-    ( { page = urlToPage version url, key = key, version = version }, Cmd.none )
+    updateUrl url { page = NotFound, key = key, version = version }
 
 
-urlToPage : Url -> Page
-urlToPage url =
+updateUrl : Url -> Model -> ( Model, Cmd Msg )
+updateUrl url model =
     case Parser.parse parser url of
         Just Gallery ->
-            GalleryPage (Tuple.first (Gallery.init version))
+            Gallery.init model.version
+                |> toGallery model
 
         Just Folders ->
-            FoldersPage (Tuple.first (Folders.init Nothing))
+            Folders.init Nothing
+                |> toFolders model
 
         Just (SelectedPhoto filename) ->
-            FoldersPage (Tuple.first (Folders.init (Just filename)))
+            Folders.init (Just filename)
+                |> toFolders model
 
         Nothing ->
-            NotFound
+            ( { model | page = NotFound }, Cmd.none )
 
 
 parser : Parser (Route -> a) a
