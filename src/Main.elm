@@ -6,6 +6,7 @@ import Html exposing (Html, a, footer, h1, li, nav, text, ul)
 import Html.Attributes exposing (classList, href)
 import Html.Lazy exposing (lazy)
 import Url exposing (Url)
+import Url.Parser as Parser exposing ((</>), Parser, s, string)
 
 
 type alias Model =
@@ -13,7 +14,8 @@ type alias Model =
 
 
 type Page
-    = Gallery
+    = SelectedPhoto String
+    | Gallery
     | Folders
     | NotFound
 
@@ -76,7 +78,22 @@ subscriptions model =
 
 init : () -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( { page = Folders }, Cmd.none )
+    ( { page = urlToPage url }, Cmd.none )
+
+
+urlToPage : Url -> Page
+urlToPage url =
+    Parser.parse parser url
+        |> Maybe.withDefault NotFound
+
+
+parser : Parser (Page -> a) a
+parser =
+    Parser.oneOf
+        [ Parser.map Folders Parser.top
+        , Parser.map Gallery (s "gallery")
+        , Parser.map SelectedPhoto (s "photos" </> Parser.string)
+        ]
 
 
 main : Program () Model Msg

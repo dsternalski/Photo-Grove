@@ -40,15 +40,15 @@
         <script>
             var app = Elm.Main.init ({node: document.getElementById("app")});
 
-            // app.ports.setFilters.subscribe(function(options){
-            //     requestAnimationFrame(function(){
-            //         Pasta.apply(document.getElementById("main-canvas"), options);
-            //     });
-            // });
+            app.ports.setFilters.subscribe(function(options){
+                requestAnimationFrame(function(){
+                    Pasta.apply(document.getElementById("main-canvas"), options);
+                });
+            });
 
-            // Pasta.addActivityListener(function(activity){
-            //     app.ports.activityChanges.send(activity);
-            // });
+            Pasta.addActivityListener(function(activity){
+                app.ports.activityChanges.send(activity);
+            });
         </script>
     </body>
 </html>
